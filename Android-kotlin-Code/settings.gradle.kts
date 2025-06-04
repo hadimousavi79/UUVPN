@@ -1,4 +1,4 @@
-rootProject.name = "UUVPN"
+rootProject.name = "DeamonVPN"
 
 include(":app")
 include(":core")

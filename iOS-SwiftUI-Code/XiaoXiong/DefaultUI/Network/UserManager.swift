@@ -24,15 +24,12 @@ class UserManager {
     private let autodataKey = "autodata"
     private let subURLDataKey = "subURLData"
     private let baseURLKey = "baseURLKey"
-    private let crisptoken = "crisptoken"
      
     // UserDefaults 引用
     private let defaults = UserDefaults.standard
 
     
-    func crispTokenData()-> String{
-        return defaults.string(forKey: crisptoken) ?? ""
-    }
+    // Remove all crisp/crisptoken related logic and methods
     
     func baseURL()-> String{
         return defaults.string(forKey: "baseURLKey") ?? ""
@@ -60,12 +57,7 @@ class UserManager {
     
     
     
-    func storeCrispTokenData (data: String) {
-        defaults.set(data, forKey: crisptoken)
-        defaults.synchronize()
-    }
-    
-    //存储 URL 相关信息
+    // 存储 URL 相关信息
     func storebaseURLData(data: String) {
         defaults.set(data, forKey: "baseURLKey")
         defaults.synchronize()

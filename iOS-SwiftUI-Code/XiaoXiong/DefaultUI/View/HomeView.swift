@@ -10,7 +10,6 @@ import ApplicationLibrary
 import Libbox
 import Library
 import SwiftUI
-import Crisp
 
 struct HomeView: View {
     
@@ -938,11 +937,6 @@ struct HomeView: View {
                     
                 }
                 
-                await MainActor.run {
-                    print("crispTokenData:"+UserManager.shared.crispTokenData())
-                    CrispSDK.configure(websiteID: UserManager.shared.crispTokenData())
-                }
-                
                 
                 
             }else{
@@ -1029,8 +1023,6 @@ struct HomeView: View {
                         UserManager.shared.storekefuUrlData(data: jsonResponse.kefuurl)
                         UserManager.shared.storewebsiteURLData(data: jsonResponse.websiteURL)
                         UserManager.shared.storeCrispTokenData(data: jsonResponse.crisptoken)
-                        
-                        CrispSDK.configure(websiteID: jsonResponse.crisptoken)
                         
                         baseDYURL = jsonResponse.baseDYURL
                         isConfiging = false

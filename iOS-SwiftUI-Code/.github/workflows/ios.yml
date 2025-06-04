@@ -1,0 +1,59 @@
+# GitHub Actions Workflow for DeamonVPN iOS App
+# This workflow builds, tests, and packages the iOS app securely using environment variables for secrets.
+
+name: iOS CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    name: Build, Test & Package iOS App
+    runs-on: macos-latest
+    env:
+      # Secure environment variables (set in GitHub repo settings)
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+      API_BASE_URL: ${{ secrets.API_BASE_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Set up Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install || true
+
+      - name: Build app
+        run: |
+          xcodebuild -workspace uuvpn.xcodeproj/project.xcworkspace -scheme uuvpn -sdk iphoneos -configuration Release build CODE_SIGN_STYLE=Manual
+
+      - name: Run unit tests
+        run: |
+          xcodebuild test -workspace uuvpn.xcodeproj/project.xcworkspace -scheme uuvpn -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
+
+      - name: Package IPA
+        run: |
+          xcodebuild -workspace uuvpn.xcodeproj/project.xcworkspace -scheme uuvpn -sdk iphoneos -configuration Release -archivePath ${{ github.workspace }}/build/uuvpn.xcarchive archive
+          xcodebuild -exportArchive -archivePath ${{ github.workspace }}/build/uuvpn.xcarchive -exportOptionsPlist XiaoXiong/ExportOptions.plist -exportPath ${{ github.workspace }}/build
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DeamonVPN-iOS-IPA
+          path: build/*.ipa
+
+# Each step is documented for clarity and security best practices are followed.
